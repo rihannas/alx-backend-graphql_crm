@@ -54,6 +54,33 @@ class OrderInput(graphene.InputObjectType):
     product_ids = graphene.List(graphene.ID, required=True)
     order_date = graphene.DateTime()
 
+class CustomerFilterInput(graphene.InputObjectType):
+    name_icontains = graphene.String()
+    email_icontains = graphene.String()
+    created_at_gte = graphene.DateTime()
+    created_at_lte = graphene.DateTime()
+    phone_pattern = graphene.String()
+
+
+class ProductFilterInput(graphene.InputObjectType):
+    name_icontains = graphene.String()
+    price_gte = graphene.Decimal()
+    price_lte = graphene.Decimal()
+    stock_gte = graphene.Int()
+    stock_lte = graphene.Int()
+    stock = graphene.Int()
+    low_stock = graphene.Boolean()
+
+
+class OrderFilterInput(graphene.InputObjectType):
+    total_amount_gte = graphene.Decimal()
+    total_amount_lte = graphene.Decimal()
+    order_date_gte = graphene.DateTime()
+    order_date_lte = graphene.DateTime()
+    customer_name = graphene.String()
+    product_name = graphene.String()
+    product_id = graphene.ID()
+
 
 # Utility Functions
 def validate_email(email):
