@@ -1,4 +1,6 @@
-import datetime
+import requests
+from datetime import datetime
+
 from celery import shared_task
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
@@ -6,7 +8,7 @@ from gql.transport.requests import RequestsHTTPTransport
 @shared_task
 def generate_crm_report():
     """Fetch CRM stats via GraphQL and log a weekly report."""
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     transport = RequestsHTTPTransport(
         url="http://localhost:8000/graphql",
