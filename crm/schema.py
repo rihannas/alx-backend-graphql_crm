@@ -5,6 +5,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from crm.models import Product
 from decimal import Decimal
 import re
 from .filters import CustomerFilter, ProductFilter, OrderFilter
