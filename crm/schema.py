@@ -305,6 +305,26 @@ class CreateProduct(graphene.Mutation):
             errors.append(ErrorType(field="general", message=str(e)))
             return CreateProduct(product=None, message="Failed to create product", errors=errors)
 
+class UpdateLowStockProducts(graphene.Mutation):
+    class Arguments:
+        pass  # no input needed, we’re auto-restocking
+
+    updated_products = graphene.List(ProductType)
+    message = graphene.String()
+
+    def mutate(self, info):
+        low_stock_products = Product.objects.filter(stock__lt=10)
+        updated = []
+
+        for product in low_stock_products:
+            product.stock += 10
+            product.save()
+            updated.append(product)
+
+        return UpdateLowStockProducts(
+            updated_products=updated,
+            message="Low stock products updated successfully!"
+        )
 
 class CreateOrder(graphene.Mutation):
     class Arguments:
@@ -429,6 +449,7 @@ class Mutation(graphene.ObjectType):
     bulk_create_customers = BulkCreateCustomers.Field()
     create_product = CreateProduct.Field()
     create_order = CreateOrder.Field()
+    update_low_stock_products = UpdateLowStockProducts.Field()
 
 # Query Class
 class Query(graphene.ObjectType):
