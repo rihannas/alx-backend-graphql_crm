@@ -1,30 +1,34 @@
 import datetime
-import requests
+from gql import gql, Client
+from gql.transport.requests import RequestsHTTPTransport
 
 def log_crm_heartbeat():
-    """Log a heartbeat message every 5 minutes, optionally verifying GraphQL."""
+    """Log a heartbeat message every 5 minutes, verifying GraphQL hello field."""
+
     timestamp = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
 
-    # Optional: Ping GraphQL endpoint to confirm it's alive
+    # Configure GraphQL client
+    transport = RequestsHTTPTransport(
+        url="http://localhost:8000/graphql",
+        verify=True,
+        retries=3,
+    )
+    client = Client(transport=transport, fetch_schema_from_transport=True)
+
+    # Try querying hello field
     graphql_alive = False
     try:
-        response = requests.post(
-            "http://localhost:8000/graphql",
-            json={"query": "{ hello }"},
-            timeout=5,
-        )
-        if response.status_code == 200 and "hello" in response.text:
+        query = gql("{ hello }")
+        result = client.execute(query)
+        if "hello" in result:
             graphql_alive = True
     except Exception:
         graphql_alive = False
 
     # Build log message
     msg = f"{timestamp} CRM is alive"
-    if graphql_alive:
-        msg += " - GraphQL OK"
-    else:
-        msg += " - GraphQL unavailable"
+    msg += " - GraphQL OK" if graphql_alive else " - GraphQL unavailable"
 
-    # Append to log file
-    with open("/tmp/crm_heartbeat_log.txt", "a") as log_file:
-        log_file.write(msg + "\n")
+    # Append log
+    with open("/tmp/crm_heartbeat_log.txt", "a") as f:
+        f.write(msg + "\n")
