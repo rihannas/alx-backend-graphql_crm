@@ -37,10 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
     'crm',
     'graphene_django',
     'django_filters',
-    'django_crontab',
+    
 ]
 
 # Cron job config
